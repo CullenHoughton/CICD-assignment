@@ -29,9 +29,17 @@ jobs:
 
       # Step 3: Lint Python code
       #### 
-
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+           flake8 . --show-source --statistics
+      
       # Step 4: Run Python tests
       ####
+       - name: Run tests
+        run: |
+          pip install pytest
+          pytest tests/ --disable-warnings
 
   deploy:
     name: Deploy & Push to Docker Hub
@@ -39,6 +47,10 @@ jobs:
     runs-on: ubuntu-latest
     # Important step - add your environment name
     # environment: PROD
+    environment: TEST
+      steps:
+    - uses: actions/checkout@v3
+
     steps:
         - uses: actions/checkout@v3
 
@@ -46,7 +58,23 @@ jobs:
         - name: List repository files
           run: ls -al
 
-    # Step 7: Build docker image 
+      # Step 7: Build docker image 
+        - name: Build Docker image
+        run: |
+          docker build -t backend_flask .
+
+      #Log into the Docker hub
+        - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+
+      #Push docker image to the docker hub
+        - name: Push Docker image to Docker Hub
+        run: |
+          docker push backend_flask
+
     # Go to dockerhub.com
     # Create a new repository - backend_flask
     # Create a new access token - <access_token>
@@ -58,8 +86,14 @@ jobs:
 
     # Step 8: # Log in to Docker Hub
     #### 
-
+        - name: Log in to Docker Hub
+          uses: docker/login-action@v2
+          with:
+            username: ${{ secrets.DOCKERHUB_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
     # Step 8: Push docker image to dockerhub
     ####
-    
+        - name: Push Docker image to Docker Hub
+          run: |
+            docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend_flask:latest
