@@ -60,20 +60,20 @@ jobs:
 
       # Step 7: Build docker image 
         - name: Build Docker image
-        run: |
-          docker build -t backend_flask .
+          run: |
+            docker build -t backend_flask .
 
       #Log into the Docker hub
         - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+          uses: docker/login-action@v2
+          with:
+            username: ${{ secrets.DOCKERHUB_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
       #Push docker image to the docker hub
         - name: Push Docker image to Docker Hub
-        run: |
-          docker push backend_flask
+          run: |
+            docker push backend_flask
 
     # Go to dockerhub.com
     # Create a new repository - backend_flask
